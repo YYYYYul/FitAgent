@@ -1,0 +1,38 @@
+name: fitagent
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  # Core backend
+  - fastapi=0.115.6
+  - uvicorn
+  - sqlalchemy=2.0.36
+  - alembic
+  # Agent framework
+  - pydantic=2.10.4
+  - pydantic-settings
+  # Database
+  - redis-py
+  # Testing
+  - pytest
+  - pytest-asyncio
+  - httpx
+  # Utilities
+  - python-dotenv
+  - python-multipart
+  - pip:
+      - langgraph==0.2.60
+      - langchain==0.3.14
+      - langchain-core==0.3.28
+      - langchain-openai==0.2.14
+      - apscheduler==3.10.4
+      - asyncpg==0.30.0
+      - psycopg2-binary==2.9.10
+      - pgvector==0.3.6
+      - passlib[bcrypt]==1.7.4
+      - python-jose[cryptography]==3.3.0
+      - openai
+      - aiosqlite
+      - email-validator

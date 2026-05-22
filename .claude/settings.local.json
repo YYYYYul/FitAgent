@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(python -m alembic init migrations)",
+      "Bash(python:*)",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
+      "Bash(npm install:*)",
+      "Bash(curl -s http://localhost:8001/api/v1/reminders/status)",
+      "Bash(curl -s \"http://localhost:8001/api/v1/reminders/events?user_id=49c8f5fc-a69f-43f1-9edd-060b3842edc9\")",
+      "Bash(npx tsc *)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(echo \"TypeScript: exit $?\")",
+      "Bash(npx -p typescript tsc --noEmit)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(ls node_modules/.bin/tsc)",
+      "Bash(ls node_modules/typescript/bin/tsc)",
+      "Bash(pkill -f \"uvicorn\" 2>/dev/null; sleep 1 *)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/e2e_sc4b.json)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/e2e_sc5.json)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/e2e_sc4c.json)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/fr2.json)",
+      "Bash(curl -s \"http://localhost:8001/api/v1/reminders/events?user_id=48d10ea2-649a-495f-9378-9527efd7cf85&limit=3\")",
+      "Bash(cmd /c \"scripts\\\\dev-stop.bat\")",
+      "Bash(taskkill //F //PID 2780)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}
