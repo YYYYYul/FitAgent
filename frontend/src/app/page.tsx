@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import ChatContainer from '@/components/chat/ChatContainer'
 import UserInfoCard from '@/components/dashboard/UserInfoCard'
+import ReminderCard from '@/components/dashboard/ReminderCard'
 import PlanCard from '@/components/plan/PlanCard'
 import { userApi } from '@/lib/api'
 import type { UserProfile } from '@/lib/types'
@@ -144,6 +145,8 @@ export default function Home() {
           </div>
           <UserInfoCard user={user} onUpdate={handleUserUpdate} />
           <PlanCard userId={user.id} />
+
+          <ReminderCard userId={user.id} />
 
           {/* Navigation */}
           <a

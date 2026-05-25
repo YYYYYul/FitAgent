@@ -4,20 +4,25 @@ import { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { historyApi } from '@/lib/api'
-import type { MonthlySummary, WorkoutLog } from '@/lib/types'
+import { historyApi, planApi } from '@/lib/api'
+import type { MonthlySummary, WorkoutLog, DailySchedule } from '@/lib/types'
 
 interface TrainingCalendarProps {
   userId: string
 }
 
+const DAY_MAP_CN: Record<string, number> = {
+  Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0,
+}
+
 export default function TrainingCalendar({ userId }: TrainingCalendarProps) {
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
-  const [selectedLog, setSelectedLog] = useState<WorkoutLog | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [planSchedule, setPlanSchedule] = useState<DailySchedule[]>([])
 
   useEffect(() => {
     loadMonthData(currentDate.getFullYear(), currentDate.getMonth() + 1)
+    loadPlanSchedule()
   }, [userId, currentDate])
 
   const loadMonthData = async (year: number, month: number) => {
@@ -29,37 +34,72 @@ export default function TrainingCalendar({ userId }: TrainingCalendarProps) {
     }
   }
 
-  const events = (summary?.daily_logs || []).map((log) => ({
+  const loadPlanSchedule = async () => {
+    try {
+      const plan = await planApi.getActive(userId) as { plan_data?: { weekly_schedule: DailySchedule[] } } | null
+      if (plan?.plan_data?.weekly_schedule) {
+        setPlanSchedule(plan.plan_data.weekly_schedule)
+      }
+    } catch {
+      setPlanSchedule([])
+    }
+  }
+
+  // Build events: completed workouts (green) + planned days (grey)
+  const completedEvents = (summary?.daily_logs || []).map((log) => ({
     title: log.focus || '训练',
     date: log.date,
     backgroundColor: '#22c55e',
     borderColor: '#16a34a',
     textColor: '#fff',
+    classNames: ['completed-workout'],
     extendedProps: {
       duration: log.duration_min,
       rpe: log.rpe,
     },
   }))
 
-  const handleDatesSet = (arg: { start: Date }) => {
-    setCurrentDate(arg.start)
+  // Generate planned-day markers for the visible month
+  const year = currentDate.getFullYear()
+  const month = currentDate.getMonth() // 0-based
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const plannedEvents: { title: string; date: string; backgroundColor: string; borderColor: string; textColor: string; classNames: string[] }[] = []
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(year, month, d)
+    const dow = dateObj.getDay() // 0=Sun
+    const matchedDay = planSchedule.find((s) => DAY_MAP_CN[s.day] === dow)
+    if (matchedDay) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+      // Skip days that already have a completed workout
+      const alreadyDone = (summary?.daily_logs || []).some((l) => l.date === dateStr)
+      if (!alreadyDone) {
+        plannedEvents.push({
+          title: `📋 ${matchedDay.focus}`,
+          date: dateStr,
+          backgroundColor: '#f1f5f9',
+          borderColor: '#cbd5e1',
+          textColor: '#64748b',
+          classNames: ['planned-day'],
+        })
+      }
+    }
   }
 
-  const handleEventClick = (info: { event: { title: string; startStr: string; extendedProps: Record<string, unknown> } }) => {
-    setSelectedLog({
-      id: '',
-      date: info.event.startStr,
-      raw_text: '',
-      parsed_record: {
-        focus: info.event.title,
-        duration_min: info.event.extendedProps.duration as number,
-        rpe: info.event.extendedProps.rpe as number,
-      },
-    })
-  }
+  const allEvents = [...completedEvents, ...plannedEvents]
 
   return (
     <div className="p-4">
+      {/* Legend */}
+      <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-green-500 inline-block" /> 已完成
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-slate-200 border border-slate-300 inline-block" /> 计划中
+        </span>
+      </div>
+
       {/* Stats cards */}
       {summary && (
         <div className="grid grid-cols-4 gap-3 mb-6">
@@ -89,19 +129,13 @@ export default function TrainingCalendar({ userId }: TrainingCalendarProps) {
           initialView="dayGridMonth"
           locale="zh-cn"
           height="auto"
-          events={events}
-          datesSet={handleDatesSet}
-          eventClick={handleEventClick}
+          events={allEvents}
           headerToolbar={{
             left: 'prev',
             center: 'title',
             right: 'next',
           }}
-          buttonText={{
-            today: '今天',
-          }}
-          dayCellClassNames="hover:bg-blue-50 cursor-pointer"
-          eventClassNames="text-xs py-0.5 px-1 rounded"
+          buttonText={{ today: '今天' }}
         />
       </div>
 

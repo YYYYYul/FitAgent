@@ -24,7 +24,26 @@
       "Bash(curl -s \"http://localhost:8001/api/v1/reminders/events?user_id=48d10ea2-649a-495f-9378-9527efd7cf85&limit=3\")",
       "Bash(cmd /c \"scripts\\\\dev-stop.bat\")",
       "Bash(taskkill //F //PID 2780)",
-      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000)"
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000)",
+      "Bash(git config *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" --connect-timeout 5 https://github.com)",
+      "Bash(curl -s http://localhost:8001/health)",
+      "Bash(curl -s \"http://localhost:8001/api/v1/reminders/next?user_id=7faf3d91-40d8-4337-907f-38a2b3a67897\")",
+      "Bash(pkill -f uvicorn)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/rem_plan.json)",
+      "Bash(curl -s http://localhost:8001/api/v1/user/7faf3d91-40d8-4337-907f-38a2b3a67897)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat -H 'Content-Type: application/json' -d @/tmp/rem3.json)",
+      "Bash(curl -s -X POST \"http://localhost:8001/api/v1/chat/stream\" -H \"Content-Type: application/json\" -d @/tmp/s5.json)",
+      "Bash(curl -s -X POST http://localhost:8001/api/v1/chat/confirm -H 'Content-Type: application/json' -d '{\"session_id\":\"s5\",\"confirmed\":true}')",
+      "Bash(echo \"tsc: $?\")",
+      "Bash(git add *)"
     ],
     "additionalDirectories": [
       "\\tmp"
